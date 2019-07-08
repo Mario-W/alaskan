@@ -1,0 +1,131 @@
+<table id="" class="ui celled table  ">
+  <thead>
+    <tr>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+    </tr>
+  </tfoot>
+
+</table>
+<script>
+  (function(window){
+    var tableBodyTemplate = $('#_tmpl').html();
+    Mustache.parse(tableBodyTemplate);
+
+    function getPropertyType(fields,name) {
+        var type = '';
+        fields.forEach(function(item, key){
+          if (item.name === name) {
+            type =  item.type
+          }
+        })
+        return type;
+    }
+
+    $(document).ready(function(){
+      var editFields = [
+        {}
+      ];
+      editFields.pop();
+
+      var createFields = [
+        {}
+      ];
+      createFields.pop();
+
+      var tableColumns = [
+        {}
+      ];
+      tableColumns.pop();
+
+      var editor = new $.fn.dataTable.Editor({
+        ajax: {
+          edit: {
+            type: "PUT",
+            url: DataService.getHost() + '/_id_',
+            contentType: 'application/json',
+            headers: {'Zeus-Token': localStorage['zeus_token']},
+            data: function(data) {
+              var content = data['data'];
+              return JSON.stringify(content);
+            }
+          },
+          remove: {
+            type: "DELETE",
+            url: DataService.getHost() + '/_id_',
+            contentType: 'application/json',
+            headers: {'Zeus-Token': localStorage['zeus_token']},
+            data: function(data) {
+              var content = data['data'];
+              return JSON.stringify(content);
+            }
+          }
+        },
+        table: "#",
+        fields: editFields,
+        idSrc: 'id'
+      });
+
+      var createEditor = new $.fn.dataTable.Editor({
+         ajax: {
+           create: {
+             type: "POST",
+             url: DataService.getHost() + '/',
+             headers: {'Zeus-Token': localStorage['zeus_token']},
+             contentType: 'application/json',
+             data: function(data) {
+               var content = data['data'];
+               var formData = content[0];
+               for(var key in formData) {
+                 var type = getPropertyType(editFields,key);
+                 if (type === 'datetime') {
+                   content[0][key] = new Date(formData[key]).getTime();
+                 }
+               }
+               return JSON.stringify(content);
+            }
+           }
+         },
+         table: "#",
+         fields: createFields,
+         idSrc: 'id'
+       });;
+
+      var apiURL = DataService.getHost() + '/';
+      var dt = $('#').DataTable({
+        dom: 'Bfrtip',
+        ajax: {
+          url: apiURL,
+          beforeSend: function(request) {
+            request.setRequestHeader("Zeus-Token",localStorage['zeus_token']);
+          }
+        },
+        columns: tableColumns,
+        select: true,
+        pageLength: ,
+        buttons: [
+            { extend: "create", editor: createEditor },
+            { extend: "remove", editor: editor }
+        ]
+      });
+
+      function generateUrl() {
+        var paramsURL = apiURL + "?" + $.param(DataListener.getGlobalParams());
+        dt.ajax.url( paramsURL)
+        dt.ajax.reload();
+      }
+
+      createEditor.on('submitSuccess', function(e, type){
+        generateUrl();
+      });
+
+      editor.on('submitSuccess', function(e, type){
+        generateUrl();
+      });
+
+      DataListener.addDataFunction("",generateUrl);
+    });
+  })(window)
+</script>

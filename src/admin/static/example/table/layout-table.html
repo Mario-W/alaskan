@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head >
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" >
+<meta http-equiv="X-UA-Compatible" content="IE=edge" >
+<meta name="viewport" content="width=device-width, initial-scale=1" >
+<title >Zeus | Bigsec</title >
+
+<script>
+    window.zeusServerHost = '';  
+</script>
+<!-- jQuery -->
+<script src="/vendors/gentelella/jquery.js" ></script>
+<script src="/vendors/js/data-service.js" ></script>
+<script src="/vendors/js/auth-service.js" ></script>
+<script src="/vendors/js/data-util.js" ></script>
+<script src="/vendors/js/chart-util.js" ></script>
+<script src="/vendors/js/mustache.min.js" ></script>
+<script src="/vendors/Chart.min.js" ></script>
+<script src="/vendors/js/jquery.sparkline.min.js" ></script>
+<script src="/vendors/js/palette.js" ></script>
+<script src="/vendors/js/data-listener.js" ></script>
+<!-- Bootstrap -->
+<link href="/vendors/gentelella/bootstrap.min.css" rel="stylesheet" >
+<!-- Font Awesome -->
+<link href="/vendors/font-awesome/font-awesome.min.css" rel="stylesheet" >
+<!-- iCheck -->
+<link href="/vendors/gentelella/flat/green.css" rel="stylesheet" >
+<!-- Select2 -->
+<link href="/vendors/gentelella/select2.min.css" rel="stylesheet" >
+<!-- Switchery -->
+<link href="/vendors/gentelella/switchery.css" rel="stylesheet" >
+<!-- bootstrap-daterangepicker -->
+<link href="/vendors/gentelella/daterangepicker.css" rel="stylesheet" >
+<link href="/vendors/gentelella/jquery.tagsinput.min.css" rel="stylesheet" >
+<link href="/vendors/pnotify.css" rel="stylesheet" >
+<link href="/vendors/pnotify.buttons.css" rel="stylesheet" >
+<link href="/vendors/pnotify.nonblock.css" rel="stylesheet" >
+<!-- gentelella -->
+<link href="/vendors/gentelella/custom.min.css" rel="stylesheet" >
+<!-- Datatables Editor -->
+<link href="/vendors/dataTables.editor/jquery.dataTables.min.css" rel="stylesheet" >
+<link href="/vendors/dataTables.editor/editor.dataTables.min.css" rel="stylesheet" >
+<link href="/vendors/dataTables.editor/buttons.dataTables.min.css" rel="stylesheet" >
+<link href="/vendors/dataTables.editor/select.dataTables.min.css" rel="stylesheet" >
+
+<link href="/vendors/style/zeus.css" rel="stylesheet" >
+<script>
+(function(window){
+  var authEnable = 'true' === 'true';
+
+  if (authEnable) {
+    var authObject = AuthService.getAuth();
+    var token = authObject.token;
+    var expired = authObject.expired;
+    var loginPage = '/_modules/account/login.html';
+    var registerPage = '/_modules/account/register.html';
+    var currentPage = window.location.pathname;
+    //新用户
+    if (!token || !expired) {
+      // 如果不是登录或者注册页面
+      if (! (currentPage === loginPage ||
+          currentPage === registerPage) ) {
+        window.location = loginPage
+      }
+    //老用户
+    } else {
+      //如果权限没有过期
+      if ((new Date().getTime()) < Number(expired)) {
+        DataService.get({
+         url: '/account/login/' + token
+       },function(resp){
+         if (!resp.authorized) {
+           window.location = '/_modules/account/login.html'
+         } else {
+
+         }
+       })
+      //如果权限过期
+      } else {
+        if (! (currentPage === loginPage ||
+            currentPage === registerPage) ) {
+          window.location = loginPage
+        }
+      }
+    }
+  }
+})(window)
+
+</script>
+</head >
+
+<body class="nav-md" >
+<div class="container body" >
+  <div class="main_container" >
+    <div class="col-md-3 left_col" >
+      <div class="left_col scroll-view" >
+        <!-- menu profile quick info -->
+<div class="navbar nav_title" style="border: 0;" >
+  <a href="index.html" class="site_title" ><i class="zeus-logo" ></i > <span >Zeus Example</span ></a >
+</div >
+
+<div class="clearfix" ></div >
+
+<div class="profile clearfix" >
+  <div class="profile_pic" >
+    <!-- <img src="images/img.jpg" alt="..." class="img-circle profile_img" > -->
+  </div >
+  <div class="profile_info" >
+  
+  </div >
+</div >
+        <!-- /menu profile quick info -->
+
+        <br />
+
+        <!-- sidebar menu -->
+
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+  <div class="menu_section">
+    <h3 >导航菜单</h3>
+    <ul class="nav side-menu">
+        <li><a><i class="fa fa-table" ></i> 黑名单 <span class="fa fa-chevron-down" ></span ></a>
+          <ul class="nav child_menu" >
+            <li ><a href="&#x2F;example&#x2F;table&#x2F;layout-table.html" >黑名单列表</a ></li>
+          </ul>
+        </li>
+    </ul >
+  </div >
+</div >
+        <!-- /sidebar menu -->
+
+        <!-- /menu footer buttons -->
+<!-- <div class="sidebar-footer hidden-small" >
+  <a data-toggle="tooltip" data-placement="top" title="Settings" >
+    <span class="glyphicon glyphicon-cog" aria-hidden="true" ></span >
+  </a >
+  <a data-toggle="tooltip" data-placement="top" title="FullScreen" >
+    <span class="glyphicon glyphicon-fullscreen" aria-hidden="true" ></span >
+  </a >
+  <a data-toggle="tooltip" data-placement="top"  >
+    <span class="glyphicon glyphicon-eye-close" aria-hidden="true" ></span >
+  </a >
+  <a data-toggle="tooltip" data-placement="top" title="Logout" href="login.html" >
+    <span class="glyphicon glyphicon-off" aria-hidden="true" ></span >
+  </a >
+</div > -->
+        <!-- /menu footer buttons -->
+      </div >
+    </div >
+
+    <!-- top navigation -->
+<div class="top_nav" >
+  <div class="nav_menu" >
+    <nav >
+      <div class="nav toggle" >
+        <a id="menu_toggle" ><i class="fa fa-bars" ></i ></a >
+      </div >
+
+      <ul class="nav navbar-nav navbar-right" >
+        <li class="" >
+          <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <span id="nav-username"></span>
+            <span class=" fa fa-angle-down" ></span >
+          </a >
+          <ul class="dropdown-menu dropdown-usermenu pull-right" >
+            <li ><a href="javascript:AuthService.logout();" ><i class="fa fa-sign-out pull-right" ></i > 登 出</a ></li >
+          </ul >
+        </li >
+
+
+      </ul >
+    </nav >
+  </div >
+</div >
+<script>
+  (function(window){
+    var username = localStorage['zeus_username'];
+    document.getElementById('nav-username').innerHTML = username;
+  })(window)
+</script>
+    <!-- /top navigation -->
+
+    <!-- page content -->
+    <div class="right_col" role="main" >
+      <div class="" >
+        <div class="page-title" >
+          <div class="title_left" >
+            <h3 >黑名单列表</h3 >
+          </div >
+        </div >
+        <div class="clearfix" ></div >
+<div class="row">
+</div>
+<div class="row">
+  <div class="col-md-12 col-xs-12" data-domtype="component">
+    <div class="x_panel">
+        <div class="x_title">
+          <h2>黑名单列表
+            <small></small>
+          </h2>
+          <ul class="nav navbar-right panel_toolbox">
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+            </li>
+            <li><a class="refresh-link"><i class="fa fa-refresh"></i></a>
+            </li>
+            <li><a class="close-link"><i class="fa fa-close"></i></a>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+<script id="blacklist_table_tmpl" type="x-tmpl-mustache">
+    {{#data}}
+    <tr>
+
+        <td>{{id}}</td>
+        <td>{{timestamp}}</td>
+        <td>{{strategy_name}}</td>
+        <td>{{decision}}</td>
+        <td>{{check_type}}</td>
+        <td>{{expire}}</td>
+        <td>{{notice_keys}}</td>
+        <td>{{geo_province}}</td>
+        <td>{{geo_city}}</td>
+        <td>{{test}}</td>
+
+    </tr>
+    {{/data}}
+</script>
+<table id="blacklist_table" class="ui celled table  ">
+  <thead>
+    <tr>
+      <th>id</th>
+      <th>日期</th>
+      <th>报警策略名</th>
+      <th>决策类型</th>
+      <th>key类型</th>
+      <th>过期时间</th>
+      <th>用于报警查询的key</th>
+      <th>省份</th>
+      <th>城市</th>
+      <th>是否是测试</th>
+    </tr>
+  </thead>
+  <tfoot>
+    <tr>
+      <th>id</th>
+      <th>日期</th>
+      <th>报警策略名</th>
+      <th>决策类型</th>
+      <th>key类型</th>
+      <th>过期时间</th>
+      <th>用于报警查询的key</th>
+      <th>省份</th>
+      <th>城市</th>
+      <th>是否是测试</th>
+    </tr>
+  </tfoot>
+
+</table>
+<script>
+  (function(window){
+    var tableBodyTemplate = $('#blacklist_table_tmpl').html();
+    Mustache.parse(tableBodyTemplate);
+
+    function getPropertyType(fields,name) {
+        var type = '';
+        fields.forEach(function(item, key){
+          if (item.name === name) {
+            type =  item.type
+          }
+        })
+        return type;
+    }
+
+    $(document).ready(function(){
+      var editFields = [
+        {}
+      ];
+      editFields.pop();
+
+      var createFields = [
+        {
+          label: 'key',
+          name: 'key',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '报警策略名',
+          name: 'strategy_name',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '策略所属场景',
+          name: 'scene_name',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: 'key类型',
+          name: 'check_type',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: 'ip&#x2F;uid&#x2F;did',
+          name: 'warning_item',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '风险值',
+          name: 'risk_score',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '过期13位时间',
+          name: 'expire',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '决策类型',
+          name: 'decision',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '原始触发事件内容',
+          name: 'variable_values',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '省份',
+          name: 'geo_province',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '城市',
+          name: 'geo_city',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {
+          label: '是否是测试',
+          name: 'test',
+          type: 'text',
+          format: '' || 'YYYY-MM-DD HH:mm'
+        },
+        {}
+      ];
+      createFields.pop();
+
+      var tableColumns = [
+        {
+          data: 'id',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'timestamp',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'strategy_name',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'decision',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'check_type',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'expire',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'notice_keys',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'geo_province',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'geo_city',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {
+          data: 'test',
+          render: function(data, type, row) {
+            if (typeof data === 'number' && String(data).length === 13) {
+              return moment(data).format('YYYY-MM-DD HH:mm')
+            } else{
+              return data;
+            }
+          }
+        },
+        {}
+      ];
+      tableColumns.pop();
+
+      var editor = new $.fn.dataTable.Editor({
+        ajax: {
+          edit: {
+            type: "PUT",
+            url: DataService.getHost() + '/blacklist_item/_id_',
+            contentType: 'application/json',
+            headers: {'Zeus-Token': localStorage['zeus_token']},
+            data: function(data) {
+              var content = data['data'];
+              return JSON.stringify(content);
+            }
+          },
+          remove: {
+            type: "DELETE",
+            url: DataService.getHost() + '/blacklist_item/_id_',
+            contentType: 'application/json',
+            headers: {'Zeus-Token': localStorage['zeus_token']},
+            data: function(data) {
+              var content = data['data'];
+              return JSON.stringify(content);
+            }
+          }
+        },
+        table: "#blacklist_table",
+        fields: editFields,
+        idSrc: 'id'
+      });
+
+      var createEditor = new $.fn.dataTable.Editor({
+         ajax: {
+           create: {
+             type: "POST",
+             url: DataService.getHost() + '/blacklist_item/',
+             headers: {'Zeus-Token': localStorage['zeus_token']},
+             contentType: 'application/json',
+             data: function(data) {
+               var content = data['data'];
+               var formData = content[0];
+               for(var key in formData) {
+                 var type = getPropertyType(editFields,key);
+                 if (type === 'datetime') {
+                   content[0][key] = new Date(formData[key]).getTime();
+                 }
+               }
+               return JSON.stringify(content);
+            }
+           }
+         },
+         table: "#blacklist_table",
+         fields: createFields,
+         idSrc: 'id'
+       });;
+
+      var apiURL = DataService.getHost() + '/blacklist_item/';
+      var dt = $('#blacklist_table').DataTable({
+        dom: 'Bfrtip',
+        ajax: {
+          url: apiURL,
+          beforeSend: function(request) {
+            request.setRequestHeader("Zeus-Token",localStorage['zeus_token']);
+          }
+        },
+        columns: tableColumns,
+        select: true,
+        pageLength: 8,
+        buttons: [
+            { extend: "create", editor: createEditor },
+            { extend: "remove", editor: editor }
+        ]
+      });
+
+      function generateUrl() {
+        var paramsURL = apiURL + "?" + $.param(DataListener.getGlobalParams());
+        dt.ajax.url( paramsURL)
+        dt.ajax.reload();
+      }
+
+      createEditor.on('submitSuccess', function(e, type){
+        generateUrl();
+      });
+
+      editor.on('submitSuccess', function(e, type){
+        generateUrl();
+      });
+
+      DataListener.addDataFunction("blacklist_table",generateUrl);
+    });
+  })(window)
+</script>
+          <br>
+        </div>
+      </div>
+  </div>
+</div>
+      </div>
+    </div >
+    <!-- /page content -->
+
+    <!-- footer content -->
+<footer >
+  <div class="pull-right" >
+    Zeus - Template by <a href="https://bigsec.com" > Bigsec </a >
+  </div >
+  <div class="clearfix" ></div >
+</footer >
+    <!-- /footer content -->
+  </div >
+</div >
+<script src="/vendors/js/dom-helper.js" ></script>
+<!-- Bootstrap -->
+<script src="/vendors/gentelella/bootstrap.js" ></script>
+<!-- iCheck -->
+<script src="/vendors/gentelella/icheck.min.js" ></script>
+<!-- bootstrap-daterangepicker -->
+<script src="/vendors/gentelella/moment.min.js" ></script>
+<script src="/vendors/gentelella/daterangepicker.js" ></script>
+<!-- jQuery Tags Input -->
+<script src="/vendors/gentelella/jquery.tagsinput.js" ></script>
+<!-- Switchery -->
+<script src="/vendors/gentelella/switchery.min.js" ></script>
+<!-- Select2 -->
+<script src="/vendors/gentelella/select2.full.min.js" ></script>
+<!-- Parsley -->
+<script src="/vendors/gentelella/parsley.min.js" ></script>
+<!-- Autosize -->
+<script src="/vendors/gentelella/autosize.min.js" ></script>
+<!-- jQuery autocomplete -->
+<script src="/vendors/gentelella/jquery.autocomplete.min.js" ></script>
+<!-- Data Table Scripts -->
+<script src="/vendors/gentelella/jquery.dataTables.min.js" ></script>
+<!-- Data Table Ediotr Scripts -->
+<!-- <script src="/vendors/dataTables.editor/dataTables.editor.min.js"></script> -->
+<script src="/vendors/dataTables.editor/dataTables.editor.js"></script>
+<!-- Data Table Ediotr Scripts -->
+<script src="/vendors/dataTables.editor/dataTables.buttons.min.js"></script>
+<!-- Data Table Ediotr Style Scripts -->
+<script src="/vendors/dataTables.editor/dataTables.select.min.js"></script>
+<!-- progress bar -->
+<script src="/vendors/gentelella/bootstrap-progressbar.min.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="/vendors/gentelella/custom.min.js" ></script>
+<!-- Markdown Scripts -->
+<script src="/vendors/showdown.min.js" ></script>
+<!-- Notify Scripts -->
+<script src="/vendors/pnotify.js" ></script>
+<script src="/vendors/pnotify.buttons.js" ></script>
+<script src="/vendors/pnotify.nonblock.js" ></script>
+<script src="/vendors/js/zeus.js" ></script>
+</body >
+</html >

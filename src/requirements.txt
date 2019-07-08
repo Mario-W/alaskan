@@ -1,0 +1,13 @@
+SQLAlchemy==1.1.14
+Flask==0.12.2
+Flask-SQLAlchemy==2.1
+Flask-Migrate==2.1.1
+Flask-Script==2.0.6
+lupa==1.5
+mysql-python==1.2.5
+redis==2.10.6
+supervisor==3.3.3
+Flask-Cors==3.0.3
+itsdangerous==0.24
+requests==2.18.4
+gevent==1.2.2

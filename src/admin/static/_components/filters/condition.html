@@ -1,0 +1,30 @@
+<div class="col-md-12 col-xs-12" data-domtype="filter">
+  <div class="x_panel zeus-filter">
+    <div class="x_title">
+      <h2>
+        <small></small>
+      </h2>
+      <div class="clearfix"></div>
+    </div>
+      <div class="x_content">
+        <form class="form-horizontal form-label-left" id="">
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-11">
+              <button type="button" class="btn btn-success" id="_refresh">刷新</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+  $("#_refresh").click(function(){
+    var params =  DataUtil.getFormData("");
+    DataListener.setGlobalParams(params);
+    DataListener.execDataFunction(null,params);
+  });
+
+  $("#").submit(function(e){e.preventDefault();});
+})
+</script>
