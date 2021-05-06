@@ -7,7 +7,7 @@ lupa==1.5
 mysql-python==1.2.5
 redis==2.10.6
 supervisor==3.3.3
-Flask-Cors==3.0.3
+Flask-Cors==3.0.9
 itsdangerous==0.24
 requests==2.18.4
 gevent==1.2.2
